@@ -23,16 +23,20 @@ Console.WriteLine("Avoid the bad guys (%) and collect the coins (^) to unlock th
 
 // Set up an int array to hold the initial x and y coordinates
 int[] currentCoordinates = [0, 0];
-Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
 
-// Get ready to keep track of what the last key pressed was
+// Some variables for tracking things during the game
 ConsoleKey lastKey;
-
-// Create a bool to track win or loss, true for win false for loss
 bool gameWon = false;
+int playerScore = 0;
 
 // Main loop, playing on the maze already printed
 do {
+    // Draw the score to the right of the map
+    Console.SetCursorPosition(mapCharArray[0].Length + 3, 1);
+    Console.Write($"Score: {playerScore}");
+    Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
+
+    // Wait for user to press a key, then decide if that's a possible move or not
     lastKey = Console.ReadKey(true).Key;
     switch (lastKey)
     {
@@ -55,8 +59,22 @@ do {
         default:
             break;
     }
+
+    // Bad Guy's turn to move, then return cursor to current location
     badGuyMove(mapCharArray);
     Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
+
+    // If the player finds a score object, update score, remove it from the map array, print over it
+    if ("$^".Contains(mapCharArray[Console.CursorTop][Console.CursorLeft]) == true)
+    {
+        if (mapCharArray[Console.CursorTop][Console.CursorLeft] == '^')
+            playerScore += 100;
+        else if (mapCharArray[Console.CursorTop][Console.CursorLeft] == '$')
+            playerScore += 200;
+        mapCharArray[Console.CursorTop][Console.CursorLeft] = ' ';
+        Console.Write(' ');
+        Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
+    }
 
     // If the cursor is on top of the # (exit) or % (bad guy), exit loop
     if ("#%".Contains(mapCharArray[Console.CursorTop][Console.CursorLeft]) == true)
@@ -135,13 +153,6 @@ static void badGuyMove(char[][] array)
         array[rowMovingTo][columnMovingTo] = '%';
     }
 }
-
-// Find bad guys in array, 
-// check spaces around bad guys, 
-// randomly select viable spot, 
-// erase bad guy from current position in array and on board
-// write % to new position in array and on board
-// Might not need to return cursor position to player's location
 
 static (int row, int column)[] charLocator(char[][] grid, char target)
 {
