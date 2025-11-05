@@ -198,13 +198,7 @@ else if (gameWon == false)
 // Method for checking if an attempted move is valid
 static bool TryMove(EntityType entity, int targetX, int targetY, char[][] grid)
 {
-    if (targetX < 0)
-        return false;
-    else if (targetX >= grid[0].Length)
-        return false;
-    else if (targetY < 0)
-        return false;
-    else if (targetY >= grid.Length)
+    if (targetX < 0 || targetX >= grid[0].Length || targetY < 0 || targetY >= grid.Length)
         return false;
     else if (entity == EntityType.player && !" #$%^!".Contains(grid[targetY][targetX]))
         return false;
