@@ -43,7 +43,7 @@ bool hasSword = false;
 
 // Main loop, playing on the maze already printed
 do {
-    // Draw the score and timer to the right of the map, and if the player has a sword
+    // Draw the score and timer to the right of the map
     Console.SetCursorPosition(mapCharArray[0].Length + 3, 1);
     Console.Write($"Score: {playerScore}");
 
@@ -145,7 +145,7 @@ do {
 
 Console.Clear();
 
-// Only print win screen if the user won
+// Check to see what "ending" to print
 if (gameWon == true)
 {
     // ASCII Art credit: patorjk.com/software/taag/
