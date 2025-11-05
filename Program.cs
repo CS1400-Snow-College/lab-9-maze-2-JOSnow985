@@ -1,11 +1,19 @@
 ﻿// Jaden Olvera, 11-4-25, Lab 9 - Maze 2
+using System.Diagnostics;
 
 Console.Clear();
-Console.WriteLine("Welcome to a Maze Game!");
-Console.WriteLine("Navigate a maze with your arrow keys and try to reach the \"#\"!");
-Console.WriteLine("Avoid the bad guys (%) and collect the coins (^) to unlock the vault!");
+Console.WriteLine("Welcome to... The MAZE\u2122!");
+Console.WriteLine("Chatwyn, the Grand Portent Teller has tasked you with recovering magic gems from The MAZE\u2122!");
+Console.WriteLine();
+Console.WriteLine("Move around the maze with your arrow keys!");
+Console.WriteLine("Avoid the bad guys (%) and collect the magic coins (^) to bring the gate down!");
+Console.WriteLine("When the gate is down, get the gems ($) and use the magic exit (#) to escape!");
+Console.WriteLine();
 Console.Write("Press enter to start playing!  ");
 Console.ReadKey();
+
+//Get a timer started to track how long it takes the user
+var runningTimer = Stopwatch.StartNew();
 
 // Clean up console for printing the map
 Console.Clear();
@@ -18,8 +26,9 @@ foreach (char[] line in mapCharArray)
         Console.Write(character);
     Console.WriteLine();
 }
-Console.WriteLine("Navigate with your arrow keys to reach the \"#\"!");
-Console.WriteLine("Avoid the bad guys (%) and collect the coins (^) to unlock the vault!");
+Console.WriteLine("Move around the maze with your arrow keys!");
+Console.WriteLine("Avoid the bad guys (%) and collect the magic coins (^) to bring the gate down!");
+Console.WriteLine("When the gate is down, get the gems ($) and use the magic exit (#) to escape!");
 
 // Set up an int array to hold the initial x and y coordinates
 int[] currentCoordinates = [0, 0];
@@ -31,9 +40,12 @@ int playerScore = 0;
 
 // Main loop, playing on the maze already printed
 do {
-    // Draw the score to the right of the map
+    // Draw the score and timer to the right of the map
     Console.SetCursorPosition(mapCharArray[0].Length + 3, 1);
     Console.Write($"Score: {playerScore}");
+
+    Console.SetCursorPosition(mapCharArray[0].Length + 3, 2);
+    Console.Write($"Time: {runningTimer.Elapsed:mm\\:ss\\.f}");
 
     // If the player's score is enough, remove the gates blocking the gems and exit
     if (playerScore >= 1000)
@@ -94,6 +106,58 @@ do {
         break;
     }
 } while (lastKey != ConsoleKey.Escape);
+
+Console.Clear();
+
+// Only print win screen if the user won
+if (gameWon == true)
+{
+    // ASCII Art credit: patorjk.com/software/taag/
+    string[] winScreen = File.ReadAllLines("winscreen.txt");
+    foreach (string row in winScreen)
+    {
+        Console.WriteLine(row);
+    }
+    Console.WriteLine();
+
+    //Stop our timer and print how long it took the user
+    runningTimer.Stop();
+
+    if (playerScore == 2800)
+        Console.WriteLine("You return from The MAZE\u2122 with the magic gems!");
+    else
+        Console.WriteLine("You left some magic gems behind, for some reason, but you return from The MAZE\u2122 anyway.");
+    Console.WriteLine("However, Chatwyn, the Grand Portent Teller, doesn't remember sending you to get gems...");
+    Console.WriteLine();
+    Console.WriteLine($"It only took you {runningTimer.Elapsed:mm\\:ss\\.f}!");
+    Console.WriteLine($"Your score was: {playerScore}, great job!");
+    Console.WriteLine("The MAZE\u2122 has been defeated...");
+}
+else if (gameWon == false)
+{
+    // ASCII Art credit: patorjk.com/software/taag/
+    string[] winScreen = File.ReadAllLines("losescreen.txt");
+    foreach (string row in winScreen)
+    {
+        Console.WriteLine(row);
+    }
+    Console.WriteLine();
+
+    runningTimer.Stop();
+    Console.WriteLine("Oh no! A bad guy got you!");
+    Console.WriteLine("Your magic coins have been confiscated and returned to The MAZE\u2122, but at least you're alive!");
+    Console.WriteLine();
+    Console.WriteLine($"You were in The MAZE\u2122 for {runningTimer.Elapsed:mm\\:ss\\.f}");
+    Console.WriteLine($"Your score was: {playerScore}");
+    Console.WriteLine("The MAZE\u2122 will wait for your return...");
+}
+else
+{
+    runningTimer.Stop();
+    Console.WriteLine($"You were in The MAZE\u2122 for {runningTimer.Elapsed:mm\\:ss\\.f}");
+    Console.WriteLine($"Your score was: {playerScore}");
+    Console.WriteLine("The MAZE\u2122 will wait for your return...");
+}
 
 // Method for checking if an attempted move is valid
 static bool TryMove(EntityType entity, int targetX, int targetY, char[][] grid)
