@@ -34,7 +34,14 @@ do {
     // Draw the score to the right of the map
     Console.SetCursorPosition(mapCharArray[0].Length + 3, 1);
     Console.Write($"Score: {playerScore}");
+
+    // If the player's score is enough, remove the gates blocking the gems and exit
+    if (playerScore >= 1000)
+        GateCrasher(mapCharArray);
+
+    // Even if GateCrasher hasn't run yet, we need to move the cursor to where the game and the player needs it to be
     Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
+
 
     // Wait for user to press a key, then decide if that's a possible move or not
     lastKey = Console.ReadKey(true).Key;
@@ -105,6 +112,17 @@ static bool TryMove(EntityType entity, int targetX, int targetY, char[][] grid)
         return false;
     else
         return true;
+}
+
+static void GateCrasher(char[][] map)
+{
+    var gatesToCrash = charLocator(map, '|');
+    foreach (var(row, column) in gatesToCrash)
+    {
+        Console.SetCursorPosition(column, row);
+        Console.Write(' ');
+        map[row][column] = ' ';
+    }
 }
 
 static void badGuyMove(char[][] array)
