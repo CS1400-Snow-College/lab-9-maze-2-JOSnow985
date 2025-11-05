@@ -133,6 +133,13 @@ if (gameWon == true)
     Console.WriteLine($"Your score was: {playerScore}, great job!");
     Console.WriteLine("The MAZE\u2122 has been defeated...");
 }
+else if (lastKey == ConsoleKey.Escape)
+{
+    runningTimer.Stop();
+    Console.WriteLine($"You were in The MAZE\u2122 for {runningTimer.Elapsed:mm\\:ss\\.f}");
+    Console.WriteLine($"Your score was: {playerScore}");
+    Console.WriteLine("The MAZE\u2122 will wait for your return...");
+}
 else if (gameWon == false)
 {
     // ASCII Art credit: patorjk.com/software/taag/
@@ -147,13 +154,6 @@ else if (gameWon == false)
     Console.WriteLine("Oh no! A bad guy got you!");
     Console.WriteLine("Your magic coins have been confiscated and returned to The MAZE\u2122, but at least you're alive!");
     Console.WriteLine();
-    Console.WriteLine($"You were in The MAZE\u2122 for {runningTimer.Elapsed:mm\\:ss\\.f}");
-    Console.WriteLine($"Your score was: {playerScore}");
-    Console.WriteLine("The MAZE\u2122 will wait for your return...");
-}
-else
-{
-    runningTimer.Stop();
     Console.WriteLine($"You were in The MAZE\u2122 for {runningTimer.Elapsed:mm\\:ss\\.f}");
     Console.WriteLine($"Your score was: {playerScore}");
     Console.WriteLine("The MAZE\u2122 will wait for your return...");
