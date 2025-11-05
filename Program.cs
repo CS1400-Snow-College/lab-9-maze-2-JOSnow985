@@ -8,6 +8,7 @@ Console.WriteLine();
 Console.WriteLine("Move around the maze with your arrow keys!");
 Console.WriteLine("Avoid the bad guys (%) and collect the magic coins (^) to bring the gate down!");
 Console.WriteLine("When the gate is down, get the gems ($) and use the magic exit (#) to escape!");
+Console.WriteLine("A sword (!) will protect you from one bad guy...");
 Console.WriteLine();
 Console.Write("Press enter to start playing!  ");
 Console.ReadKey();
@@ -29,6 +30,7 @@ foreach (char[] line in mapCharArray)
 Console.WriteLine("Move around the maze with your arrow keys!");
 Console.WriteLine("Avoid the bad guys (%) and collect the magic coins (^) to bring the gate down!");
 Console.WriteLine("When the gate is down, get the gems ($) and use the magic exit (#) to escape!");
+Console.WriteLine("A sword (!) will protect you from one bad guy...");
 
 // Set up an int array to hold the initial x and y coordinates
 int[] currentCoordinates = [0, 0];
@@ -37,10 +39,11 @@ int[] currentCoordinates = [0, 0];
 ConsoleKey lastKey;
 bool gameWon = false;
 int playerScore = 0;
+bool hasSword = false;
 
 // Main loop, playing on the maze already printed
 do {
-    // Draw the score and timer to the right of the map
+    // Draw the score and timer to the right of the map, and if the player has a sword
     Console.SetCursorPosition(mapCharArray[0].Length + 3, 1);
     Console.Write($"Score: {playerScore}");
 
@@ -83,27 +86,60 @@ do {
     badGuyMove(mapCharArray);
     Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
 
-    // If the player finds a score object, update score, remove it from the map array, print over it
-    if ("$^".Contains(mapCharArray[Console.CursorTop][Console.CursorLeft]) == true)
+    // Check if the cursor is on a character that causes something to happen
+    if ("#%$^!".Contains(mapCharArray[Console.CursorTop][Console.CursorLeft]) == true)
     {
-        if (mapCharArray[Console.CursorTop][Console.CursorLeft] == '^')
-            playerScore += 100;
-        else if (mapCharArray[Console.CursorTop][Console.CursorLeft] == '$')
-            playerScore += 200;
-        mapCharArray[Console.CursorTop][Console.CursorLeft] = ' ';
-        Console.Write(' ');
-        Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
-    }
+        char currentTile = mapCharArray[Console.CursorTop][Console.CursorLeft];
 
-    // If the cursor is on top of the # (exit) or % (bad guy), exit loop
-    if ("#%".Contains(mapCharArray[Console.CursorTop][Console.CursorLeft]) == true)
-    {
-        if (mapCharArray[Console.CursorTop][Console.CursorLeft] == '#')
+        // If the player finds the sword, remove it from the array and set hasSword
+        if (currentTile == '!')
+        {
+            hasSword = true;
+            mapCharArray[Console.CursorTop][Console.CursorLeft] = ' ';
+            Console.Write(' ');
+            Console.SetCursorPosition(mapCharArray[0].Length + 3, 3);
+            Console.Write($"You have a sword! You'll be safe from one bad guy!");
+            Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
+        }
+
+        // If the player finds a score object, update score, remove it from the map array, print over it
+        if (currentTile == '^' || currentTile == '$')
+        {
+            if (currentTile == '^')
+                playerScore += 100;
+            else if (currentTile == '$')
+                playerScore += 200;
+            mapCharArray[Console.CursorTop][Console.CursorLeft] = ' ';
+            Console.Write(' ');
+            Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
+        }
+
+        //If the player reaches the exit, they win!
+        if (currentTile == '#')
+        {
             gameWon = true;
-        else if (mapCharArray[Console.CursorTop][Console.CursorLeft] == '%')
+            Thread.Sleep(500);
+            break;
+        }
+
+        // If the player encounters a bad guy, but has a sword, delete bad guy
+        else if (currentTile == '%' && hasSword == true)
+        {
+            mapCharArray[Console.CursorTop][Console.CursorLeft] = ' ';
+            Console.Write(' ');
+            hasSword = false;
+            Console.SetCursorPosition(mapCharArray[0].Length + 3, 3);
+            Console.Write("Your sword shattered against the bad guy and he ran away!     ");
+            Console.SetCursorPosition(currentCoordinates[0],currentCoordinates[1]);
+        }
+
+        // If the player has no sword, and encounters an enemy, they lose
+        else if (currentTile == '%' && hasSword == false)
+        {
             gameWon = false;
-        Thread.Sleep(500);
-        break;
+            Thread.Sleep(500);
+            break;
+        }
     }
 } while (lastKey != ConsoleKey.Escape);
 
@@ -164,13 +200,13 @@ static bool TryMove(EntityType entity, int targetX, int targetY, char[][] grid)
 {
     if (targetX < 0)
         return false;
-    else if (targetX > grid[0].Length - 1)
+    else if (targetX >= grid[0].Length)
         return false;
     else if (targetY < 0)
         return false;
-    else if (targetY > grid.Length - 1)
+    else if (targetY >= grid.Length)
         return false;
-    else if (entity == EntityType.player && !" #$%^".Contains(grid[targetY][targetX]))
+    else if (entity == EntityType.player && !" #$%^!".Contains(grid[targetY][targetX]))
         return false;
     else if (entity == EntityType.nonplayer && !" #$%".Contains(grid[targetY][targetX]))
         return false;
